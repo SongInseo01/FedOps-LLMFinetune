@@ -1,7 +1,8 @@
 # server requirements
 fedops
 scikit-learn
-transformers==4.43.1
-trl==0.15.1
-peft==0.14.0
+transformers
+trl
+peft
 bitsandbytes
+hydra-core
