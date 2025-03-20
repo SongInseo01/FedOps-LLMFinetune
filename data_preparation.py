@@ -1,6 +1,7 @@
 import logging
 from transformers import AutoTokenizer
 from trl import DataCollatorForCompletionOnlyLM
+from datasets import load_dataset
 
 # Set log format
 handlers_list = [logging.StreamHandler()]
@@ -47,7 +48,11 @@ def reformat(dataset, llm_task):
 
 def load_data(dataset_name: str, llm_task: str):
     """Load entire dataset without partitioning."""
-    dataset = reformat(dataset_name, llm_task)
+    # 실제 데이터셋 로딩 필요
+    dataset = load_dataset(dataset_name)
+
+    # reformat 적용
+    dataset = reformat(dataset, llm_task)
     return dataset
 
 def replace_keys(input_dict, match="-", target="_"):
