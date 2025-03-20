@@ -14,7 +14,7 @@ dataset:
   validation_split: 0.2  # Ratio of dividing train data by validation
 
 # client
-task_id: 'podname'  # Input your Task Name that you register in FedOps Website
+task_id: 'medicalllm'  # Input your Task Name that you register in FedOps Website
 
 wandb: 
   use: false  # Whether to use wandb
