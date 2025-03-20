@@ -42,13 +42,19 @@ def main(cfg: DictConfig) -> None:
     Load Dataset
     """
     dataset = data_preparation.load_data(dataset_name=cfg.dataset.name, llm_task=cfg.dataset.llm_task)
-    formatted_dataset = dataset.map(prompt_formatting, remove_columns=["instruction", "response"])  # 프롬프트 변환
+    # formatted_dataset = dataset.map(prompt_formatting, remove_columns=["instruction", "response"])  # 프롬프트 변환
 
     """
     Dataset Split
     """
-    split_dataset = dataset.train_test_split(test_size=0.2)
+    # 1. train split만 가져와서 train/val/test로 나누기
+    train_data = dataset["train"]
+
+    # 2. 먼저 train/remaining 나누기
+    split_dataset = train_data.train_test_split(test_size=0.2)
     train_dataset = split_dataset["train"]
+
+    # 3. remaining에서 val/test 나누기
     val_test_split = split_dataset["test"].train_test_split(test_size=0.5)
     val_dataset = val_test_split["train"]
     test_dataset = val_test_split["test"]
