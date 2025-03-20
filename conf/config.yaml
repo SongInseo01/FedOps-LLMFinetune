@@ -5,7 +5,6 @@ learning_rate: 0.0001 # Adjusted for LLM fine-tuning
 
 model_type: 'Huggingface'  # Change to indicate Hugging Face model
 model:
-  _target_: transformers.AutoModelForCausalLM  # Use Hugging Face Model
   name: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'  # Replace with desired LLM model
   output_size: 512
 
