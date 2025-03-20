@@ -4,7 +4,7 @@ import flwr as fl
 import time
 import os
 from functools import partial
-from . import client_api
+import client_api
 
 # set log format
 handlers_list = [logging.StreamHandler()]

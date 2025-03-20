@@ -6,10 +6,10 @@ import asyncio
 import uvicorn
 from datetime import datetime
 
-from . import client_utils
-from . import client_fl_for_llm as client_fl
-from . import client_wandb
-from . import client_api
+import client_utils
+import client_fl_for_llm as client_fl
+import client_wandb
+import client_api
 
 
 class FLClientTask():

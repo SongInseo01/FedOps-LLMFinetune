@@ -5,7 +5,7 @@ from pydantic.main import BaseModel
 import re
 import logging
 import uuid, socket
-from . import client_api
+import client_api
 
 # set log format
 handlers_list = [logging.StreamHandler()]

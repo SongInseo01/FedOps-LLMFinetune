@@ -1,6 +1,6 @@
 import logging
 import wandb
-from . import client_api
+import client_api
 
 
 def start_wandb(wandb_key, wandb_project, wandb_name):
