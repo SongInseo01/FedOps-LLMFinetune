@@ -19,7 +19,7 @@ def formatting_prompts_func(example):
             f"{example['instruction'][i]}\n[/INST]\n"
             f"{example['response'][i]} </s>"
         )
-        output_texts.append(text)
+        output_texts.append({"text": text})
     return output_texts
 
 def get_tokenizer_and_data_collator_and_propt_formatting(model_name: str):
