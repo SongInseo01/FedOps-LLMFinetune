@@ -39,6 +39,8 @@ def finetune_llm():
 
         trainer.train()
 
+    return custom_train
+
 def test_llm():
     def custom_test():
         pass

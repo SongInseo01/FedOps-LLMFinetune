@@ -57,10 +57,10 @@ class FLClientTask():
         elif self.model_type == "Huggingface":
             self.trainset = fl_task["trainset"]
             self.tokenizer = fl_task["tokenizer"]
-            self.data_collator = fl_task["data_collator"]
-            self.formatting_prompts_func = fl_task["formatting_prompts_func"]
-            self.training_arguments = fl_task["training_arguments"]
-            self.train_cfg = fl_task["training_args"]
+            # self.data_collator = fl_task["data_collator"]
+            # self.formatting_prompts_func = fl_task["formatting_prompts_func"]
+            # self.training_arguments = fl_task["training_arguments"]
+            # self.train_cfg = fl_task["training_args"]
 
 
                     

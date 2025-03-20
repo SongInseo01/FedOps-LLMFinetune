@@ -69,7 +69,7 @@ def main(cfg: DictConfig) -> None:
     """
     Fine-Tune the Model using finetune_llm from models.py
     """
-    models.finetune_llm().custom_train(model, train_dataset, val_dataset, tokenizer)
+    models.finetune_llm()
 
     """
     Save the fine-tuned model
@@ -83,10 +83,11 @@ def main(cfg: DictConfig) -> None:
     Register model and dataset for Federated Learning
     """
     registration = {
-        "train_loader" : train_dataset,
+        "trainset" : train_dataset,
         "val_loader" : val_dataset,
         "test_loader" : test_dataset,
         "model" : model,
+        "model_name": cfg.model.name,
         "tokenizer" : tokenizer,
     }
     

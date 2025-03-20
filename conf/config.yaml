@@ -7,6 +7,7 @@ model_type: 'Huggingface'  # Change to indicate Hugging Face model
 model:
   _target_: transformers.AutoModelForCausalLM  # Use Hugging Face Model
   name: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'  # Replace with desired LLM model
+  output_size: 512
 
 dataset:
   name: 'medalpaca/medical_meadow_medical_flashcards'  # Input your dataset name
@@ -27,7 +28,7 @@ wandb:
 num_epochs: 3  # Number of local epochs (adjust for better fine-tuning)
 batch_size: 16  # Batch size optimized for LLM fine-tuning
 num_rounds: 2  # Number of federated learning rounds
-clients_per_round: 2  # Number of clients participating in each round
+clients_per_round: 1  # Number of clients participating in each round
 
 server:
   strategy:
