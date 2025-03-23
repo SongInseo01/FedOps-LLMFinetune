@@ -94,14 +94,16 @@ class FLServer():
         if self.model_type == "Huggingface":
             from flwrtunellmaggregation_fedavg import FlowerTuneLlm
 
-            stratedy = FlowerTuneLlm(
+            strategy = FlowerTuneLlm(
                 fraction_fit=self.strategy.fraction_fit,
                 fraction_evaluate=self.strategy.fraction_evaluate,
+                initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
                 
 
             )
-
-        strategy = instantiate(
+        
+        else:
+            strategy = instantiate(
             self.strategy,
             initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
             evaluate_fn=self.get_eval_fn(model, model_name),
