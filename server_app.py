@@ -5,8 +5,8 @@ import datetime
 import os
 import json
 import time
-from . import server_api
-from . import server_utils
+import server_api
+import server_utils
 from collections import OrderedDict
 from hydra.utils import instantiate
 
@@ -98,7 +98,7 @@ class FLServer():
                 fraction_fit=self.strategy.fraction_fit,
                 fraction_evaluate=self.strategy.fraction_evaluate,
                 initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
-                
+
 
             )
         
