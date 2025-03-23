@@ -19,14 +19,9 @@ def main(cfg: DictConfig) -> None:
     model = AutoModelForCausalLM.from_pretrained(cfg.model.name)
     model_type = cfg.model_type # Check tensorflow or torch model
     model_name = type(model).__name__
-    gl_test_torch = models.test_torch() # set torch test    
-    
-    # Load validation data for evaluating global model
-    gl_val_loader = data_preparation.gl_model_torch_validation(batch_size=cfg.batch_size) # torch
     
     # Start fl server
-    fl_server = FLServer(cfg=cfg, model=model, model_name=model_name, model_type=model_type,
-                         gl_val_loader=gl_val_loader, test_torch=gl_test_torch) # torch
+    fl_server = FLServer(cfg=cfg, model=model, model_name=model_name, model_type=model_type)
     fl_server.start()
     
 
