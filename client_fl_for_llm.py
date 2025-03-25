@@ -211,10 +211,9 @@ class FLClient(fl.client.NumPyClient):
             # Update local model parameters: LoRA Adapter params
             self.set_parameters(parameters)
 
-            train_fn = self.finetune_llm()
-
-            # 학습 후 adapter 파라미터 받기
-            parameters_prime = train_fn(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer)
+            
+            trained_model = self.finetune_llm(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer)
+            parameters_prime = self.get_parameters()
 
             num_examples_train = len(self.trainset)
             results = {"train_loss": results.training_loss}
