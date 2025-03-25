@@ -137,11 +137,10 @@ class FLClientTask():
             # label_values = [[i, self.y_label_counter[i]] for i in range(self.output_size)]
             # logging.info(f'label_values: {label_values}')
 
-            logging.info('flower_client_start 1')
+            
             # client_start object
             client_start = client_fl.flower_client_start(self.status.server_IP, client)
-            logging.info('flower_client_start 2')
-
+            
             # FL client start time
             fl_start_time = time.time()
 

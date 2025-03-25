@@ -337,12 +337,10 @@ class FLClient(fl.client.NumPyClient):
 
 
 def flower_client_start(FL_server_IP, client):
-    logging.info('inner flower_client_start 1')
     # client_start = partial(fl.client.start_numpy_client, server_address=FL_server_IP, client=client)
     client_start = partial(
         fl.client.start_client,
         server_address=FL_server_IP,
         client=client.to_client()
     )
-    logging.info('inner flower_client_start 2')
     return client_start
