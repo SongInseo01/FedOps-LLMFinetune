@@ -91,18 +91,15 @@ class FLServer():
         elif self.model_type == "Pytorch":
             model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
         elif self.model_type == "Huggingface":
-            if model is not None:
-                model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
-            else:
-                model = AutoModelForCausalLM.from_pretrained(model_name)
-                peft_config = LoraConfig(
-                    r=8,
-                    lora_alpha=16,
-                    lora_dropout=0.075,
-                    task_type="CAUSAL_LM",
-                )
-                model = get_peft_model(model, peft_config)
-                model_parameters = get_parameters_for_llm(model)
+            model = AutoModelForCausalLM.from_pretrained(model_name)
+            peft_config = LoraConfig(
+                r=8,
+                lora_alpha=16,
+                lora_dropout=0.075,
+                task_type="CAUSAL_LM",
+            )
+            model = get_peft_model(model, peft_config)
+            model_parameters = get_parameters_for_llm(model)
 
 
         # if self.model_type == "Huggingface":
