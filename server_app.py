@@ -99,19 +99,7 @@ class FLServer():
 
         if self.model_type == "Huggingface":
             from flwrtunellmaggregation_fedavg import FlowerTuneLlm
-
-            def get_on_fit_config(save_path):
-                """Return a function that will be used to construct the config that the
-                client's fit() method will receive."""
-
-                def fit_config_fn(server_round: int):
-                    fit_config = {}
-                    fit_config["current_round"] = server_round
-                    fit_config["save_path"] = save_path
-                    return fit_config
-
-                return fit_config_fn
-
+            logging.info("select strategy FlowerTuneLlm")
             strategy = FlowerTuneLlm(
                 fraction_fit=self.strategy.fraction_fit,
                 fraction_evaluate=self.strategy.fraction_evaluate,
