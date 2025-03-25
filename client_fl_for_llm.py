@@ -57,7 +57,7 @@ class FLClient(fl.client.NumPyClient):
                  # PyTorch params
                  train_loader=None, val_loader=None, test_loader=None, cfg=None, train_torch=None, test_torch=None,
                  # HuggingFace params
-                 trainset=None, tokenizer=None, data_collator=None, formatting_prompts_func=None, training_args: DictConfig = None, num_rounds=None):
+                 finetune_llm=None, trainset=None, tokenizer=None, data_collator=None, formatting_prompts_func=None, training_args: DictConfig = None, num_rounds=None):
         
         self.cfg = cfg
         self.model_type = model_type
@@ -89,6 +89,7 @@ class FLClient(fl.client.NumPyClient):
             self.trainset = trainset
             self.val_loader = val_loader
             self.tokenizer = tokenizer
+            self.finetune_llm = finetune_llm
             # self.data_collator = data_collator
             # self.formatting_prompts_func = formatting_prompts_func
             # self.training_arguments = TrainingArguments(**training_args.training_arguments)

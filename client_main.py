@@ -75,10 +75,11 @@ def main(cfg: DictConfig) -> None:
 
     model = get_peft_model(model, peft_config)
 
+
     """
     Fine-Tune the Model using finetune_llm from models.py
     """
-    models.finetune_llm()
+    finetune_llm = models.finetune_llm()
 
     """
     Save the fine-tuned model
@@ -92,6 +93,7 @@ def main(cfg: DictConfig) -> None:
     Register model and dataset for Federated Learning
     """
     registration = {
+        "finetune_llm": finetune_llm,
         "trainset" : train_dataset,
         "val_loader" : val_dataset,
         "test_loader" : test_dataset,
