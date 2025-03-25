@@ -11,6 +11,7 @@ import client_fl_for_llm as client_fl
 import client_wandb
 import client_api
 
+import threading
 
 class FLClientTask():
     def __init__(self, cfg, fl_task=None):
@@ -221,7 +222,9 @@ class FLClientTask():
             # self.status.server_IP = "0.0.0.0:8080"
 
             # start FL Client
-            background_tasks.add_task(self.fl_client_start)
+            # background_tasks.add_task(self.fl_client_start) # 문제: 서버가 참여를 확인하지 못함
+            
+            threading.Thread(target=asyncio.run, args=(self.fl_client_start(),), daemon=False).start()
 
             return self.status
 
