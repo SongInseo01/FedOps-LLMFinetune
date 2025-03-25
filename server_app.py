@@ -117,7 +117,7 @@ class FLServer():
                 fraction_evaluate=self.strategy.fraction_evaluate,
                 initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
                 on_fit_config_fn=self.fit_config,
-
+                on_evaluate_config_fn=self.evaluate_config,
 
             )
         
@@ -277,7 +277,10 @@ class FLServer():
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}.h5"
             elif self.model_type =="Pytorch":
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}.pth"
+            elif self.model_type == "Huggingface":
+                pass
             server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
+            
 
             logging.info(f'upload {global_model_file_name} model in s3')
 
