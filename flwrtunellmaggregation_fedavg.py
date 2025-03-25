@@ -23,8 +23,10 @@ class FlowerTuneLlm(FedAvg):
     def configure_fit(
         self, server_round: int, parameters: Parameters, client_manager: ClientManager
     ):
+        log(INFO, f"Available clients: {client_manager.num_available()}")
         """Configure the next round of training."""
         return_clients = super().configure_fit(server_round, parameters, client_manager)
+        log(INFO, f"Selected {len(return_clients)} clients for round {server_round}")
 
         # Test communication costs
         fit_ins_list = [fit_ins for _, fit_ins in return_clients]
