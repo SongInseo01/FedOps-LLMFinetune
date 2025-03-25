@@ -17,7 +17,7 @@ def main(cfg: DictConfig) -> None:
     # Build init global model using transformers
     model = None
     model_type = cfg.model_type # Check tensorflow or torch model
-    model_name = type(model).__name__
+    model_name = cfg.model.name
     
     # Start fl server
     fl_server = FLServer(cfg=cfg, model=model, model_name=model_name, model_type=model_type)
