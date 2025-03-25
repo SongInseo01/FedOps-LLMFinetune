@@ -12,6 +12,7 @@ import logging
 from omegaconf import DictConfig, OmegaConf
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import get_peft_model, LoraConfig
     
     
 @hydra.main(config_path="./conf", config_name="config", version_base=None)
@@ -65,6 +66,14 @@ def main(cfg: DictConfig) -> None:
     Model Load
     """
     model = AutoModelForCausalLM.from_pretrained(cfg.model.name)
+    peft_config = LoraConfig(
+        r=8,
+        lora_alpha=16,
+        lora_dropout=0.075,
+        task_type="CAUSAL_LM",
+    )
+
+    model = get_peft_model(model, peft_config)
 
     """
     Fine-Tune the Model using finetune_llm from models.py

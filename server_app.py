@@ -9,6 +9,9 @@ import server_api
 import server_utils
 from collections import OrderedDict
 from hydra.utils import instantiate
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import get_peft_model, LoraConfig
+from models_llm import get_parameters_for_llm
 
 # TF warning log filtering
 # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -91,10 +94,15 @@ class FLServer():
             if model is not None:
                 model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
             else:
-                # LoRA adapter만 학습 대상이므로 빈 초기 파라미터 허용
-                import numpy as np
-                logging.info("No model provided. Initializing Huggingface with dummy parameters.")
-                model_parameters = [np.zeros((1,))]  # 최소 구조
+                model = AutoModelForCausalLM.from_pretrained(model_name)
+                peft_config = LoraConfig(
+                    r=8,
+                    lora_alpha=16,
+                    lora_dropout=0.075,
+                    task_type="CAUSAL_LM",
+                )
+                model = get_peft_model(model, peft_config)
+                model_parameters = get_parameters_for_llm(model)
 
 
         # if self.model_type == "Huggingface":
