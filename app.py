@@ -126,10 +126,9 @@ class FLClientTask():
                     model_type=self.model_type,
                     trainset=self.trainset,
                     tokenizer=self.tokenizer,
-                    data_collator=self.data_collator,
-                    formatting_prompts_func=self.formatting_prompts_func,
-                    training_args=self.training_arguments,
-                    num_rounds=self.cfg.fl.num_rounds
+                    # formatting_prompts_func=self.formatting_prompts_func,
+                    # training_args=self.training_arguments,
+                    # num_rounds=self.cfg.fl.num_rounds
                 )
 
 
