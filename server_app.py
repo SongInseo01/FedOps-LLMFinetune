@@ -4,6 +4,7 @@ import flwr as fl
 import datetime
 import os
 import json
+import numpy as np
 import time
 import server_api
 import server_utils
@@ -20,6 +21,19 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s [%(levelname)8.8s] 
                     handlers=[logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
+def load_initial_parameters_from_shape(json_path: str):
+    """
+    parameter_shapes.json 파일을 읽고, 각 shape에 맞는 0으로 초기화된 numpy 파라미터 리스트 반환
+    """
+    if not os.path.exists(json_path):
+        raise FileNotFoundError(f"Cannot find parameter shape file at: {json_path}")
+    
+    with open(json_path, "r") as f:
+        shape_list = json.load(f)
+    
+    # numpy 배열 생성 (dtype은 float32가 일반적)
+    initial_parameters = [np.zeros(shape, dtype=np.float32) for shape in shape_list]
+    return initial_parameters
 
 class FLServer():
     def __init__(self, cfg, model, model_name, model_type, 
@@ -91,15 +105,8 @@ class FLServer():
         elif self.model_type == "Pytorch":
             model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
         elif self.model_type == "Huggingface":
-            model = AutoModelForCausalLM.from_pretrained(model_name)
-            peft_config = LoraConfig(
-                r=8,
-                lora_alpha=16,
-                lora_dropout=0.075,
-                task_type="CAUSAL_LM",
-            )
-            model = get_peft_model(model, peft_config)
-            model_parameters = get_parameters_for_llm(model)
+            json_path = "./parameter_shapes.json"  # 절대경로 또는 상대경로
+            model_parameters = load_initial_parameters_from_shape(json_path)
 
 
         # if self.model_type == "Huggingface":
