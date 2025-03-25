@@ -87,6 +87,7 @@ class FLClient(fl.client.NumPyClient):
 
         elif self.model_type == "Huggingface":
             self.trainset = trainset
+            self.val_loader = val_loader
             self.tokenizer = tokenizer
             # self.data_collator = data_collator
             # self.formatting_prompts_func = formatting_prompts_func
