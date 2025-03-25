@@ -39,6 +39,9 @@ def finetune_llm():
 
         trainer.train()
 
+        from models_llm import get_parameters_for_llm
+        return get_parameters_for_llm(model)
+
     return custom_train
 
 def test_llm():

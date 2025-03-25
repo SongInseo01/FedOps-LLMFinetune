@@ -211,30 +211,11 @@ class FLClient(fl.client.NumPyClient):
             # Update local model parameters: LoRA Adapter params
             self.set_parameters(parameters)
 
-            # Cosine 학습률 스케줄링
-            new_lr = self.cosine_annealing_for_llm(
-                int(config["current_round"]),
-                self.num_rounds,
-                self.train_cfg.learning_rate_max,
-                self.train_cfg.learning_rate_min,
-            )
-            self.training_arguments.learning_rate = new_lr
-            self.training_arguments.output_dir = config.get("save_path", "./output")
+            train_fn = self.finetune_llm()
 
-            # SFTTrainer 설정
-            trainer = SFTTrainer(
-                model=self.model,
-                tokenizer=self.tokenizer,
-                args=self.training_arguments,
-                max_seq_length=self.train_cfg.seq_length,
-                train_dataset=self.trainset,
-                formatting_func=self.formatting_prompts_func,
-                data_collator=self.data_collator,
-            )
+            # 학습 후 adapter 파라미터 받기
+            parameters_prime = train_fn(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer)
 
-            # 학습 실행
-            results = trainer.train()
-            parameters_prime = self.get_parameters()
             num_examples_train = len(self.trainset)
             results = {"train_loss": results.training_loss}
 
