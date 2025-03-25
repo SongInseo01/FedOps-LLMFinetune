@@ -172,7 +172,8 @@ class FLServer():
                 torch.save(model.state_dict(), gl_model_path+'.pth')
 
             elif self.model_type == "Huggingface":
-                pass
+                logging.warning("Skipping evaluation for Huggingface model")
+                loss, accuracy = 0.0, 0.0
 
             if self.server.round >= 1:
                 # fit aggregation end time
