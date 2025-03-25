@@ -5,7 +5,6 @@ from server_app import FLServer
 import models
 import data_preparation
 from hydra.utils import instantiate
-from transformers import AutoModelForCausalLM
 
 
 
@@ -16,7 +15,7 @@ def main(cfg: DictConfig) -> None:
     Set the initial global model you created in models.py.
     """
     # Build init global model using transformers
-    model = AutoModelForCausalLM.from_pretrained(cfg.model.name)
+    model = None
     model_type = cfg.model_type # Check tensorflow or torch model
     model_name = type(model).__name__
     
