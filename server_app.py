@@ -97,20 +97,28 @@ class FLServer():
                 model_parameters = [np.zeros((1,))]  # 최소 구조
 
 
-        if self.model_type == "Huggingface":
-            from flwrtunellmaggregation_fedavg import FlowerTuneLlm
-            logging.info("select strategy FlowerTuneLlm")
-            strategy = FlowerTuneLlm(
-                fraction_fit=self.strategy.fraction_fit,
-                fraction_evaluate=self.strategy.fraction_evaluate,
-                initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
-                on_fit_config_fn=self.fit_config,
-                on_evaluate_config_fn=self.evaluate_config,
+        # if self.model_type == "Huggingface":
+        #     from flwrtunellmaggregation_fedavg import FlowerTuneLlm
+        #     logging.info("select strategy FlowerTuneLlm")
+        #     strategy = FlowerTuneLlm(
+        #         fraction_fit=self.strategy.fraction_fit,
+        #         fraction_evaluate=self.strategy.fraction_evaluate,
+        #         initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
+        #         on_fit_config_fn=self.fit_config,
+        #         on_evaluate_config_fn=self.evaluate_config,
 
-            )
+        #     )
         
-        else:
-            strategy = instantiate(
+        # else:
+        #     strategy = instantiate(
+        #     self.strategy,
+        #     initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
+        #     evaluate_fn=self.get_eval_fn(model, model_name),
+        #     on_fit_config_fn=self.fit_config,
+        #     on_evaluate_config_fn=self.evaluate_config,
+        #     )
+
+        strategy = instantiate(
             self.strategy,
             initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
             evaluate_fn=self.get_eval_fn(model, model_name),
