@@ -209,13 +209,15 @@ class FLClient(fl.client.NumPyClient):
 
         
         elif self.model_type == "Huggingface":
+            logging.info('Hf fit start 1')
             # Update local model parameters: LoRA Adapter params
             self.set_parameters(parameters)
 
-            
+            logging.info('Hf fit start 2')
             trained_model = self.finetune_llm(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer)
+            logging.info('Hf fit start 3')
             parameters_prime = self.get_parameters()
-
+            logging.info('Hf fit start 4')
             num_examples_train = len(self.trainset)
             results = {"train_loss": results.training_loss}
 
@@ -335,5 +337,12 @@ class FLClient(fl.client.NumPyClient):
 
 
 def flower_client_start(FL_server_IP, client):
-    client_start = partial(fl.client.start_numpy_client, server_address=FL_server_IP, client=client)
+    logging.info('inner flower_client_start 1')
+    # client_start = partial(fl.client.start_numpy_client, server_address=FL_server_IP, client=client)
+    client_start = partial(
+        fl.client.start_client,
+        server_address=FL_server_IP,
+        client=client.to_client()
+    )
+    logging.info('inner flower_client_start 2')
     return client_start
