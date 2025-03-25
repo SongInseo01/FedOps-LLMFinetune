@@ -88,7 +88,13 @@ class FLServer():
         elif self.model_type == "Pytorch":
             model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
         elif self.model_type == "Huggingface":
-            model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
+            if model is not None:
+                model_parameters = [val.cpu().numpy() for _, val in model.state_dict().items()]
+            else:
+                # LoRA adapter만 학습 대상이므로 빈 초기 파라미터 허용
+                import numpy as np
+                logging.info("No model provided. Initializing Huggingface with dummy parameters.")
+                model_parameters = [np.zeros((1,))]  # 최소 구조
 
 
         if self.model_type == "Huggingface":

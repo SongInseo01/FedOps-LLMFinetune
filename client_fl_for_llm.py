@@ -88,10 +88,10 @@ class FLClient(fl.client.NumPyClient):
         elif self.model_type == "Huggingface":
             self.trainset = trainset
             self.tokenizer = tokenizer
-            self.data_collator = data_collator
-            self.formatting_prompts_func = formatting_prompts_func
-            self.training_arguments = TrainingArguments(**training_args.training_arguments)
-            self.train_cfg = training_args
+            # self.data_collator = data_collator
+            # self.formatting_prompts_func = formatting_prompts_func
+            # self.training_arguments = TrainingArguments(**training_args.training_arguments)
+            # self.train_cfg = training_args
 
     def set_parameters(self, parameters):
         if self.model_type in ["Tensorflow"]:
