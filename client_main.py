@@ -11,8 +11,8 @@ from app import FLClientTask
 import logging
 from omegaconf import DictConfig, OmegaConf
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import get_peft_model, LoraConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import get_peft_model, LoraConfig, prepare_model_for_kbit_training
     
     
 @hydra.main(config_path="./conf", config_name="config", version_base=None)
@@ -45,41 +45,49 @@ def main(cfg: DictConfig) -> None:
     dataset = data_preparation.load_data(dataset_name=cfg.dataset.name, llm_task=cfg.dataset.llm_task)
     # formatted_dataset = dataset.map(prompt_formatting, remove_columns=["instruction", "response"])  # 프롬프트 변환
 
-    """
-    Dataset Split
-    """
-    # 1. train split만 가져와서 train/val/test로 나누기
-    train_data = dataset["train"]
-
-    # 2. 먼저 train/remaining 나누기
-    split_dataset = train_data.train_test_split(test_size=0.2)
-    train_dataset = split_dataset["train"]
-
-    # 3. remaining에서 val/test 나누기
-    val_test_split = split_dataset["test"].train_test_split(test_size=0.5)
-    val_dataset = val_test_split["train"]
-    test_dataset = val_test_split["test"]
-
     # Preprocess function
     def preprocess_function(examples):
         texts = formatting_prompts_func(examples)
         model_inputs = tokenizer(
             texts, padding="max_length", truncation=True, max_length=512
         )
-        model_inputs["labels"] = model_inputs["input_ids"]
+        model_inputs["labels"] = model_inputs["input_ids"].copy()
         return model_inputs
 
     # Tokenize datasets
-    train_dataset = train_dataset.map(preprocess_function, batched=True)
-    val_dataset = val_dataset.map(preprocess_function, batched=True)
-    test_dataset = test_dataset.map(preprocess_function, batched=True)
+    tokenized_dataset = dataset.map(preprocess_function, batched=True)
+    train_dataset = tokenized_dataset["train"]
+    val_dataset=tokenized_dataset.get("validation", None)
 
     logger.info("Dataset formatted and split into train/val/test")
 
     """
     Model Load
     """
-    model = AutoModelForCausalLM.from_pretrained(cfg.model.name)
+    def load_model(model_name: str, quantization: int, gradient_checkpointing: bool, peft_config):
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+        )
+
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            quantization=bnb_config,
+            torch_dtype=torch.float16,
+            device_map="auto",
+        )
+
+        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=gradient_checkpointing)
+
+        if gradient_checkpointing:
+            model.config.use_cache = False
+
+        return get_peft_model(model, peft_config)
+
+    quantization = 4
+    gradient_checkpoining = True
     peft_config = LoraConfig(
         r=8,
         lora_alpha=16,
@@ -87,7 +95,12 @@ def main(cfg: DictConfig) -> None:
         task_type="CAUSAL_LM",
     )
 
-    model = get_peft_model(model, peft_config)
+    model = load_model(
+        model_name=cfg.model.name, 
+        quantization=quantization,
+        gradient_checkpointing=gradient_checkpoining,
+        peft_config=peft_config,
+    )
 
 
     """
