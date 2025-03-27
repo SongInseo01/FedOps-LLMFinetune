@@ -220,7 +220,10 @@ class FLClient(fl.client.NumPyClient):
             parameters_prime = self.get_parameters()
             logging.info('Hf fit start 4')
             num_examples_train = len(self.trainset)
-            results = {"train_loss": results.training_loss}
+            
+            train_loss = results["train_loss"] if "train_loss" in results else None
+            results = {"train_loss": train_loss}
+
 
 
         else:
