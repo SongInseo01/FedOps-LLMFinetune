@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s [%(levelname)8.8s] 
 logger = logging.getLogger(__name__)
 
 def formatting_prompts_func(example):
-    """Llama 3 Style"""
     output_texts = []
     sys_prompt = "You are an expert trained on healthcare and biomedical reasoning."
 
@@ -17,10 +16,11 @@ def formatting_prompts_func(example):
         text = (
             f"<s>[INST] <<SYS>>\n{sys_prompt}\n<</SYS>>\n\n"
             f"{example['instruction'][i]}\n[/INST]\n"
-            f"{example['response'][i]} </s>"
+            f"### Response:\n{example['response'][i]} </s>"
         )
         output_texts.append(text)
     return output_texts
+
 
 def get_tokenizer_and_data_collator_and_propt_formatting(model_name: str):
     """Get tokenizer, data_collator and prompt formatting."""
