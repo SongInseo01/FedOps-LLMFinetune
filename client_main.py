@@ -58,6 +58,7 @@ def main(cfg: DictConfig) -> None:
     tokenized_dataset = dataset.map(preprocess_function, batched=True)
     train_dataset = tokenized_dataset["train"]
     val_dataset=tokenized_dataset.get("validation", None)
+    test_dataset=tokenized_dataset.get("test", None)
 
     logger.info("Dataset formatted and split into train/val/test")
 
@@ -65,12 +66,19 @@ def main(cfg: DictConfig) -> None:
     Model Load
     """
     def load_model(model_name: str, quantization: int, gradient_checkpointing: bool, peft_config):
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4",
-        )
+        if quantization == 4:
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+            )
+        elif quantization == 8:
+            bnb_config = BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+        else:
+            bnb_config = None  # 양자화 안함
 
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
