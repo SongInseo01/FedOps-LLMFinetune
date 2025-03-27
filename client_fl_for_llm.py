@@ -210,6 +210,9 @@ class FLClient(fl.client.NumPyClient):
 
         
         elif self.model_type == "Huggingface":
+            train_results_prefixed = {}
+            val_results_prefixed = {}
+
             logging.info('Hf fit start 1')
             # Update local model parameters: LoRA Adapter params
             self.set_parameters(parameters)
@@ -220,7 +223,7 @@ class FLClient(fl.client.NumPyClient):
             parameters_prime = self.get_parameters()
             logging.info('Hf fit start 4')
             num_examples_train = len(self.trainset)
-            
+
             train_loss = results["train_loss"] if "train_loss" in results else None
             results = {"train_loss": train_loss}
 
@@ -297,7 +300,9 @@ class FLClient(fl.client.NumPyClient):
 
         elif self.model_type == "Huggingface":
             # 추후 구현
-            pass
+            test_loss = 0.0
+            test_accuracy = 0.0
+            num_examples_test = 0
 
         else:
             raise ValueError("Unsupported model_type")
