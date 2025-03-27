@@ -1,9 +1,13 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer
+import torch
 
 
 def finetune_llm():
     def custom_train(model, train_dataset, val_dataset, tokenizer, formatting_prompts_func, data_collator):
+
+        model.train()
+
         """Fine-Tune the LLM using SFTTrainer."""
         training_args = TrainingArguments(
             output_dir="./results",
