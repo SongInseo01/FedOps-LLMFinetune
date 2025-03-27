@@ -30,6 +30,9 @@ def finetune_llm():
             fp16=True if torch.cuda.is_available() else False,
         )
 
+        if val_dataset is None:
+            training_args.evaluation_strategy = "no"
+
         trainer = SFTTrainer(
             model=model,
             train_dataset=train_dataset,
