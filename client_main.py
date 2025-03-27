@@ -60,7 +60,19 @@ def main(cfg: DictConfig) -> None:
     val_dataset = val_test_split["train"]
     test_dataset = val_test_split["test"]
 
-    train_dataset = dataset
+    # Preprocess function
+    def preprocess_function(examples):
+        texts = formatting_prompts_func(examples)
+        model_inputs = tokenizer(
+            texts, padding="max_length", truncation=True, max_length=512
+        )
+        model_inputs["labels"] = model_inputs["input_ids"].copy()
+        return model_inputs
+
+    # Tokenize datasets
+    train_dataset = train_dataset.map(preprocess_function, batched=True)
+    val_dataset = val_dataset.map(preprocess_function, batched=True)
+    test_dataset = test_dataset.map(preprocess_function, batched=True)
 
     logger.info("Dataset formatted and split into train/val/test")
 
