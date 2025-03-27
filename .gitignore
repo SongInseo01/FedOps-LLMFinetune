@@ -1,5 +1,9 @@
 fine_tuned_model/
 outputs/
+results/
+wandb/
+
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
