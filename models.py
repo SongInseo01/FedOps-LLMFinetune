@@ -23,15 +23,16 @@ def finetune_llm():
             save_total_limit=10,
             gradient_checkpointing=True,
             lr_scheduler_type="constant",
-            evaluation_strategy="epoch",
+            # evaluation_strategy="epoch",
+            evaluation_strategy="no",
             save_strategy="epoch",
             logging_dir="./logs",
             
             fp16=True if torch.cuda.is_available() else False,
         )
 
-        if val_dataset is None:
-            training_args.evaluation_strategy = "no"
+        # if val_dataset is not None:
+        #     training_args.evaluation_strategy = "epoch"
 
         trainer = SFTTrainer(
             model=model,
