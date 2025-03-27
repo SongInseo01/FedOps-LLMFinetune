@@ -302,7 +302,7 @@ class FLClient(fl.client.NumPyClient):
             # 추후 구현
             test_loss = 0.0
             test_accuracy = 0.0
-            num_examples_test = 0
+            num_examples_test = 1
 
         else:
             raise ValueError("Unsupported model_type")
