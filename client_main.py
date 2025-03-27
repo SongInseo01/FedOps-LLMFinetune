@@ -82,7 +82,7 @@ def main(cfg: DictConfig) -> None:
 
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            quantization=bnb_config,
+            quantization_config=bnb_config,
             torch_dtype=torch.float16,
             device_map="auto",
         )
