@@ -35,7 +35,7 @@ def main(cfg: DictConfig) -> None:
     """
     Load Tokenizer, Data Collator, Prompt Formatting Function
     """
-    tokenizer, data_collator, prompt_formatting = data_preparation.get_tokenizer_and_data_collator_and_propt_formatting(cfg.model.name)
+    tokenizer, data_collator, formatting_prompts_func = data_preparation.get_tokenizer_and_data_collator_and_propt_formatting(cfg.model.name)
 
     logger.info(f"Loaded tokenizer and data collator for model {cfg.model.name}")
 
@@ -100,6 +100,8 @@ def main(cfg: DictConfig) -> None:
         "model" : model,
         "model_name": cfg.model.name,
         "tokenizer" : tokenizer,
+        "formatting_prompts_func" : formatting_prompts_func,
+        "data_collator" : data_collator,
     }
     
     

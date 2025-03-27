@@ -90,8 +90,8 @@ class FLClient(fl.client.NumPyClient):
             self.val_loader = val_loader
             self.tokenizer = tokenizer
             self.finetune_llm = finetune_llm
-            # self.data_collator = data_collator
-            # self.formatting_prompts_func = formatting_prompts_func
+            self.data_collator = data_collator
+            self.formatting_prompts_func = formatting_prompts_func
             # self.training_arguments = TrainingArguments(**training_args.training_arguments)
             # self.train_cfg = training_args
 
@@ -215,7 +215,7 @@ class FLClient(fl.client.NumPyClient):
             self.set_parameters(parameters)
 
             logging.info('Hf fit start 2')
-            trained_model = self.finetune_llm(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer)
+            trained_model = self.finetune_llm(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer, self.formatting_prompts_func, self.data_collator)
             logging.info('Hf fit start 3')
             parameters_prime = self.get_parameters()
             logging.info('Hf fit start 4')

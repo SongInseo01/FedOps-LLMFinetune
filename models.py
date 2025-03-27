@@ -7,8 +7,9 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer
 
+
 def finetune_llm():
-    def custom_train(model, train_dataset, val_dataset, tokenizer):
+    def custom_train(model, train_dataset, val_dataset, tokenizer, formatting_prompts_func, data_collator):
         """Fine-Tune the LLM using SFTTrainer."""
         training_args = TrainingArguments(
             output_dir="./results",
@@ -35,6 +36,9 @@ def finetune_llm():
             eval_dataset=val_dataset,
             args=training_args,
             tokenizer=tokenizer,
+            max_seq_length=512,
+            formatting_func=formatting_prompts_func,
+            data_collator=data_collator
         )
 
         trainer.train()
