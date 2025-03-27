@@ -66,7 +66,7 @@ def main(cfg: DictConfig) -> None:
         model_inputs = tokenizer(
             texts, padding="max_length", truncation=True, max_length=512
         )
-        model_inputs["labels"] = model_inputs["input_ids"].copy()
+        model_inputs["labels"] = model_inputs["input_ids"]
         return model_inputs
 
     # Tokenize datasets
