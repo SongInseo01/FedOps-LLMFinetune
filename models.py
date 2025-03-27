@@ -1,7 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer
 import torch
-from peft import print_trainable_parameters
 
 
 def finetune_llm():
@@ -9,8 +8,6 @@ def finetune_llm():
 
         model.train()
         model.config.use_cache = False
-        print("====== TRAINABLE PARAMETERS ======"  )
-        print_trainable_parameters(model)
         trainable_params = [n for n, p in model.named_parameters() if p.requires_grad]
         print(f"[DEBUG] 학습 가능한 파라미터 수: {len(trainable_params)}")
         for n in trainable_params:
