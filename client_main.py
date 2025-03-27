@@ -60,6 +60,8 @@ def main(cfg: DictConfig) -> None:
     val_dataset = val_test_split["train"]
     test_dataset = val_test_split["test"]
 
+    train_dataset = dataset
+
     logger.info("Dataset formatted and split into train/val/test")
 
     """
