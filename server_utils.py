@@ -1,5 +1,6 @@
 import boto3
 import os, logging, re
+import zipfile
 
 # FL Server Status Class
 class FLServerStatus:
@@ -9,6 +10,13 @@ class FLServerStatus:
     end_by_round = 0  # fit aggregation end
     round = 0  # round number
 
+def zip_folder(folder_path, zip_path):
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, folder_path)
+                zipf.write(full_path, arcname=rel_path)
 
 # Connect aws session
 def aws_session(region_name='ap-northeast-2'):

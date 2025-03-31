@@ -12,7 +12,7 @@ from collections import OrderedDict
 from hydra.utils import instantiate
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import get_peft_model, LoraConfig
-from models_llm import get_parameters_for_llm
+from models_llm import get_parameters_for_llm, set_parameters_for_llm
 
 # TF warning log filtering
 # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -186,6 +186,13 @@ class FLServer():
             elif self.model_type == "Huggingface":
                 logging.warning("Skipping evaluation for Huggingface model")
                 loss, accuracy = 0.0, 0.0
+                set_parameters_for_llm(model, parameters_ndarrays)
+
+                model_save_path = f"{gl_model_path}"
+                model.save_pretrained(model_save_path)
+
+
+                
 
             if self.server.round >= 1:
                 # fit aggregation end time
@@ -284,11 +291,19 @@ class FLServer():
             # upload global model
             if self.model_type == "Tensorflow":
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}.h5"
+                server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type =="Pytorch":
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}.pth"
+                server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type == "Huggingface":
-                pass
-            server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
+                global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}"
+                model_save_path = f"./{global_model_file_name}"
+                self.init_model.save_pretrained(model_save_path)
+
+                zip_path = f"{model_save_path}.zip"
+                server_utils.zip_folder(model_save_path, zip_path)
+                server_utils.upload_model_to_bucket(self.task_id, f"{global_model_file_name}.zip")
+            
             
 
             logging.info(f'upload {global_model_file_name} model in s3')
