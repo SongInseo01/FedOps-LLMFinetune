@@ -90,7 +90,8 @@ def model_download_s3(task_id, model_type, model=None):
             model.load_state_dict(torch.load(gl_model_save_path))
         
         elif model_type == "Huggingface":
-            pass
+            logging.info(f"Huggingface model downloaded: {gl_model_save_path}")
+            model = None
 
         # gl_model = tf.keras.models.load_model(gl_model_save_path)            
 
