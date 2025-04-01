@@ -59,7 +59,7 @@ def model_download_s3(task_id, model_type, model=None):
 
         for content in content_list:
             key = content['Key']
-            file_name = key.split('/')[1]
+            file_name = key.split('/')[-1]
             file_list.append(file_name)
 
         logging.info(f'model_file_list: {file_list}')
