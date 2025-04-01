@@ -115,6 +115,7 @@ def main(cfg: DictConfig) -> None:
     Fine-Tune the Model using finetune_llm from models.py
     """
     finetune_llm = models.finetune_llm()
+    test_llm = models.test_llm()
 
     """
     Save the fine-tuned model
@@ -129,6 +130,7 @@ def main(cfg: DictConfig) -> None:
     """
     registration = {
         "finetune_llm": finetune_llm,
+        "test_llm": test_llm,
         "trainset" : train_dataset,
         "val_dataset" : val_dataset,
         "test_dataset" : test_dataset,

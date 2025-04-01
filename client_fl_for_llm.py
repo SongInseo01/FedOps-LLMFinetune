@@ -57,7 +57,7 @@ class FLClient(fl.client.NumPyClient):
                  # PyTorch params
                  train_loader=None, val_loader=None, test_loader=None, cfg=None, train_torch=None, test_torch=None,
                  # HuggingFace params
-                 finetune_llm=None, trainset=None, val_dataset=None, test_dataset=None, tokenizer=None, data_collator=None, formatting_prompts_func=None, training_args: DictConfig = None, num_rounds=None):
+                 finetune_llm=None, test_llm=None, trainset=None, val_dataset=None, test_dataset=None, tokenizer=None, data_collator=None, formatting_prompts_func=None, training_args: DictConfig = None, num_rounds=None):
         
         self.cfg = cfg
         self.model_type = model_type
@@ -91,6 +91,7 @@ class FLClient(fl.client.NumPyClient):
             self.test_dataset = test_dataset
             self.tokenizer = tokenizer
             self.finetune_llm = finetune_llm
+            self.test_llm = test_llm
             self.data_collator = data_collator
             self.formatting_prompts_func = formatting_prompts_func
             # self.training_arguments = TrainingArguments(**training_args.training_arguments)
@@ -305,42 +306,20 @@ class FLClient(fl.client.NumPyClient):
             num_examples_test = len(self.test_loader)
 
         elif self.model_type == "Huggingface":
-            def compute_metrics(eval_pred):
-                logits, labels = eval_pred
-                predictions = np.argmax(logits, axis=-1)
-                acc = accuracy_score(labels.flatten(), predictions.flatten())
-                return {"accuracy": acc}
 
-            self.set_parameters(parameters)
-            # 디바이스 맞춰서 모델 이동
-            self.model.eval()
-            self.model.to("cuda" if torch.cuda.is_available() else "cpu")
-
-            # 기본 평가용 args
-            eval_args = TrainingArguments(
-                output_dir="./tmp_eval",
-                per_device_eval_batch_size=4,
-                dataloader_drop_last=False,
-                report_to="none",
-                do_train=False,
-                do_eval=True,
-                disable_tqdm=True,
-            )
-
-            # Trainer로 평가 실행
-            trainer = SFTTrainer(
-                model=self.model,
-                args=eval_args,
-                tokenizer=self.tokenizer,
-                data_collator=self.data_collator,
-                compute_metrics=compute_metrics,
-            )
-
-            eval_result = trainer.evaluate(eval_dataset=self.test_dataset)
-
-            test_loss = eval_result.get("eval_loss", 0.0)
-            test_accuracy = eval_result.get("eval_accuracy", 0.0)  # 커스텀 metric 없으면 0.0으로 나올 수 있음
-            num_examples_test = len(self.test_dataset)
+            if self.test_dataset is None:
+                # 추후 구현
+                test_loss = 0.0
+                test_accuracy = 0.0
+                num_examples_test = 1
+            
+            else:
+                test_loss, test_accuracy, num_examples_test = self.test_llm(
+                    self.model,
+                    self.test_dataset,
+                    self.tokenizer,
+                    self.data_collator,
+                )
 
 
         else:

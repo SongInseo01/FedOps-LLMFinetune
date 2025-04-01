@@ -1,6 +1,8 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer
 import torch
+from sklearn.metrics import accuracy_score
+import numpy as np
 
 
 def finetune_llm():
@@ -26,7 +28,7 @@ def finetune_llm():
             save_total_limit=10,
             gradient_checkpointing=True,
             lr_scheduler_type="constant",
-            # evaluation_strategy="epoch",
+            evaluation_strategy="epoch",
             evaluation_strategy="no",
             save_strategy="epoch",
             logging_dir="./logs",
@@ -34,8 +36,8 @@ def finetune_llm():
             fp16=True if torch.cuda.is_available() else False,
         )
 
-        # if val_dataset is not None:
-        #     training_args.evaluation_strategy = "epoch"
+        if val_dataset is None:
+            training_args.evaluation_strategy = None
 
         trainer = SFTTrainer(
             model=model,
@@ -56,5 +58,49 @@ def finetune_llm():
     return custom_train
 
 def test_llm():
-    def custom_test():
-        pass
+    def custom_test(model, test_dataset, tokenizer, data_collator, formatting_prompts_func=None):
+        """
+        모델과 test dataset을 받아 평가를 수행하는 함수
+        """
+
+        # 평가 세팅
+        model.eval()
+        model.to("cuda" if torch.cuda.is_available() else "cpu")
+
+        eval_args = TrainingArguments(
+            output_dir="./eval_results",
+            per_device_eval_batch_size=4,
+            dataloader_drop_last=False,
+            do_train=False,
+            do_eval=True,
+            report_to="none",
+            disable_tqdm=True,
+        )
+
+        # accuracy metric 정의 (선택 사항)
+        def compute_metrics(eval_pred):
+            logits, labels = eval_pred
+            preds = np.argmax(logits, axis=-1)
+            # Flatten for token-level accuracy
+            acc = accuracy_score(labels.flatten(), preds.flatten())
+            return {"accuracy": acc}
+
+        trainer = SFTTrainer(
+            model=model,
+            args=eval_args,
+            tokenizer=tokenizer,
+            data_collator=data_collator,
+            compute_metrics=compute_metrics if test_dataset else None,
+        )
+
+        result = trainer.evaluate(eval_dataset=test_dataset)
+
+        test_loss = result.get("eval_loss", 0.0)
+        test_accuracy = result.get("eval_accuracy", 0.0)
+        num_samples = len(test_dataset)
+
+        print(f"[TEST] loss: {test_loss:.4f}, accuracy: {test_accuracy:.4f}")
+
+        return test_loss, test_accuracy, num_samples
+
+    return custom_test

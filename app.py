@@ -61,6 +61,7 @@ class FLClientTask():
             self.test_dataset = fl_task["test_dataset"]
             self.tokenizer = fl_task["tokenizer"]
             self.finetune_llm = fl_task["finetune_llm"]
+            self.test_llm = fl_task["test_llm"]
             self.data_collator = fl_task["data_collator"]
             self.formatting_prompts_func = fl_task["formatting_prompts_func"]
             # self.training_arguments = fl_task["training_arguments"]
@@ -133,6 +134,7 @@ class FLClientTask():
                     test_dataset=self.test_dataset,
                     tokenizer=self.tokenizer,
                     finetune_llm=self.finetune_llm,
+                    test_llm=self.test_llm,
                     formatting_prompts_func=self.formatting_prompts_func,
                     data_collator=self.data_collator,
                     # training_args=self.training_arguments,
