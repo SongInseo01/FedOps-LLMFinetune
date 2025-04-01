@@ -295,7 +295,7 @@ class FLServer():
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}.pth"
                 server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type == "Huggingface":
-                # 이미 위에서 save된 adapter_parameters.npz 파일을 zip 처리
+                global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}"
                 # 모델 디렉토리 경로
                 model_save_path = f"./{gl_model_name}_gl_model_V{self.server.gl_model_v}"
                 
