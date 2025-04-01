@@ -187,8 +187,14 @@ class FLServer():
                 logging.warning("Skipping evaluation for Huggingface model")
                 loss, accuracy = 0.0, 0.0
 
+                print("----model----")
+                print("----model----")
+                print(model)
+
+                peft_config = model.peft_config
+
                 base_model = AutoModelForCausalLM.from_pretrained("./dummy-basemodel")
-                model = PeftModel(base_model, model.peft_config)
+                model = PeftModel(base_model, peft_config)
 
                 set_parameters_for_llm_server(model, parameters_ndarrays)
 
