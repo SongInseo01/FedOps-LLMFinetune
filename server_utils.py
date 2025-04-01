@@ -70,7 +70,7 @@ def model_download_s3(task_id, model_type, model=None):
         pattern = r"([A-Za-z]+)_gl_model_V(\d+)\.(h5|pth)"
 
         if model_type == "Huggingface":
-            pattern = r"(.+)_gl_model_V(\d+)\.(zip|h5|pth)"
+            pattern = r"(.+)_gl_model_V(\d+)\.(npz|h5|pth)"
         
         # 안전하게 매칭된 파일만 필터링
         matching_files = [f for f in file_list if re.match(pattern, f)]
