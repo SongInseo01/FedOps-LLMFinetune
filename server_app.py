@@ -297,10 +297,10 @@ class FLServer():
                 server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type == "Huggingface":
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}"
-                npz_file_path = f"./{global_model_file_name}.npz"
+                npz_file_path = f"{global_model_file_name}.npz"
                 # 경로 변경: evaluate에서 저장한 실제 경로
                 # evaluate에서는: ./{gl_model_name}_gl_model_VN/adapter_parameters.npz 로 저장함
-                model_dir = f"./{global_model_file_name}"
+                model_dir = f"{global_model_file_name}"
                 real_npz_path = os.path.join(model_dir, "adapter_parameters.npz")
                 # 파일 이름 통일을 위해 복사 (선택)
                 shutil.copy(real_npz_path, npz_file_path)
