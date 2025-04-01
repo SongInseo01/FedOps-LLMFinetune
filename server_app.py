@@ -296,12 +296,14 @@ class FLServer():
                 server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type == "Huggingface":
                 # 이미 위에서 save된 adapter_parameters.npz 파일을 zip 처리
-                global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}"
+                # 모델 디렉토리 경로
                 model_save_path = f"./{gl_model_name}_gl_model_V{self.server.gl_model_v}"
+                
+                # npz 파일 경로 지정
+                npz_file_path = f"{model_save_path}_adapter_model_parameters.npz"
 
-                zip_path = f"{model_save_path}.zip"
-                server_utils.zip_folder(model_save_path, zip_path)
-                server_utils.upload_model_to_bucket(self.task_id, f"{global_model_file_name}.zip")
+                # S3 업로드
+                server_utils.upload_model_to_bucket(self.task_id, npz_file_path)
             
             
 

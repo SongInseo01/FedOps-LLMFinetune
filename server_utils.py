@@ -1,6 +1,8 @@
 import boto3
 import os, logging, re
 import zipfile
+import json
+import numpy as np
 
 # FL Server Status Class
 class FLServerStatus:
@@ -163,4 +165,17 @@ def model_download_local(model_type, model=None):
         gl_model_version = 0
 
         return gl_model, gl_model_name, gl_model_version
+
+def load_initial_parameters_from_shape(json_path: str):
+    """
+    parameter_shapes.json 파일을 읽고, 각 shape에 맞는 0으로 초기화된 numpy 파라미터 리스트 반환
+    """
+    if not os.path.exists(json_path):
+        raise FileNotFoundError(f"Cannot find parameter shape file at: {json_path}")
     
+    with open(json_path, "r") as f:
+        shape_list = json.load(f)
+    
+    # numpy 배열 생성 (dtype은 float32가 일반적)
+    initial_parameters = [np.zeros(shape, dtype=np.float32) for shape in shape_list]
+    return initial_parameters
