@@ -67,6 +67,9 @@ def model_download_s3(task_id, model_type, model=None):
         # File name pattern
         pattern = r"([A-Za-z]+)_gl_model_V(\d+)\.(h5|pth)"
 
+        if model_type == "Huggingface":
+            pattern = r"(.+)_gl_model_V(\d+)\.(zip|h5|pth)"
+
         if file_list:
             latest_gl_model_file = sorted(file_list, key=lambda x: int(re.findall(pattern, x)[0][1]), reverse=True)[0]
             gl_model_name = re.findall(pattern, latest_gl_model_file)[0][0]
