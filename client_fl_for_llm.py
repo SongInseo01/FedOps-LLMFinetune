@@ -219,7 +219,7 @@ class FLClient(fl.client.NumPyClient):
             self.set_parameters(parameters)
 
             logging.info('Hf-fit finetune')
-            trained_model = self.finetune_llm(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer, self.formatting_prompts_func, self.data_collator)
+            trained_model = self.finetune_llm(self.model, self.trainset, self.val_dataset, self.tokenizer, self.formatting_prompts_func, self.data_collator)
             logging.info('Hf-fit get param')
             parameters_prime = self.get_parameters()
             logging.info('Hf-fit save model')
