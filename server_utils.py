@@ -69,17 +69,18 @@ def model_download_s3(task_id, model_type, model=None):
 
         if model_type == "Huggingface":
             pattern = r"(.+)_gl_model_V(\d+)\.(zip|h5|pth)"
+        
+        # 안전하게 매칭된 파일만 필터링
+        matching_files = [f for f in file_list if re.match(pattern, f)]
+        if not matching_files:
+            raise FileNotFoundError("No matching global model files found in S3.")
 
         if file_list:
             # latest_gl_model_file = sorted(file_list, key=lambda x: int(re.findall(pattern, x)[0][1]), reverse=True)[0]
-            matching_files = [f for f in file_list if re.match(pattern, f)]
-            if not matching_files:
-                raise FileNotFoundError("No matching global model files found in S3.")
             latest_gl_model_file = sorted(
                 matching_files,
                 key=lambda x: int(re.findall(pattern, x)[0][1]),
-                reverse=True
-            )[0]
+                reverse=True)[0]
             gl_model_name = re.findall(pattern, latest_gl_model_file)[0][0]
             gl_model_version = int(latest_gl_model_file.split('_V')[1].split('.')[0])
             gl_model_path = os.path.join(f"{task_id}/", latest_gl_model_file)
