@@ -87,8 +87,6 @@ class FLClient(fl.client.NumPyClient):
 
         elif self.model_type == "Huggingface":
             self.trainset = trainset
-            self.val_dataset = val_dataset
-            self.test_dataset = test_dataset
             self.tokenizer = tokenizer
             self.finetune_llm = finetune_llm
             self.test_llm = test_llm
@@ -220,7 +218,7 @@ class FLClient(fl.client.NumPyClient):
             self.set_parameters(parameters)
 
             logging.info('Hf-fit finetune')
-            trained_model = self.finetune_llm(self.model, self.trainset, self.val_dataset, self.tokenizer, self.formatting_prompts_func, self.data_collator)
+            trained_model = self.finetune_llm(self.model, self.trainset, self.tokenizer, self.formatting_prompts_func, self.data_collator)
             logging.info('Hf-fit get param')
             parameters_prime = self.get_parameters()
             logging.info('Hf-fit save model')
@@ -306,20 +304,10 @@ class FLClient(fl.client.NumPyClient):
             num_examples_test = len(self.test_loader)
 
         elif self.model_type == "Huggingface":
-
-            if self.test_dataset is None:
-                # 추후 구현
-                test_loss = 0.0
-                test_accuracy = 0.0
-                num_examples_test = 1
-            
-            else:
-                test_loss, test_accuracy, num_examples_test = self.test_llm(
-                    self.model,
-                    self.test_dataset,
-                    self.tokenizer,
-                    self.data_collator,
-                )
+            # 추후 실행
+            test_loss = 0.0
+            test_accuracy = 0.0
+            num_examples_test = 1
 
 
         else:

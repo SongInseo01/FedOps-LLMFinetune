@@ -132,8 +132,6 @@ def main(cfg: DictConfig) -> None:
         "finetune_llm": finetune_llm,
         "test_llm": test_llm,
         "trainset" : train_dataset,
-        "val_dataset" : val_dataset,
-        "test_dataset" : test_dataset,
         "model" : model,
         "model_name": cfg.model.name,
         "tokenizer" : tokenizer,
