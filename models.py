@@ -29,7 +29,6 @@ def finetune_llm():
             gradient_checkpointing=True,
             lr_scheduler_type="constant",
             evaluation_strategy="epoch",
-            evaluation_strategy="no",
             save_strategy="epoch",
             logging_dir="./logs",
             
@@ -37,7 +36,7 @@ def finetune_llm():
         )
 
         if val_dataset is None:
-            training_args.evaluation_strategy = None
+            training_args.evaluation_strategy = "no"
 
         trainer = SFTTrainer(
             model=model,
