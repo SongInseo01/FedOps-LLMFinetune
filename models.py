@@ -3,31 +3,30 @@ from trl import SFTTrainer
 import torch
 from sklearn.metrics import accuracy_score
 import numpy as np
+from omegaconf import OmegaConf
+
+cfg = OmegaConf.load("conf/config.yaml")
 
 
 def finetune_llm():
     def custom_train(model, train_dataset, tokenizer, formatting_prompts_func, data_collator):
-
+        
         model.train()
         model.config.use_cache = False
-        trainable_params = [n for n, p in model.named_parameters() if p.requires_grad]
-        print(f"[DEBUG] 학습 가능한 파라미터 수: {len(trainable_params)}")
-        for n in trainable_params:
-            print(f" - {n}")
 
         """Fine-Tune the LLM using SFTTrainer."""
         training_args = TrainingArguments(
             output_dir="./results",
-            learning_rate=0.01,
-            per_device_train_batch_size=16,
-            gradient_accumulation_steps=1,
-            logging_steps=10,
-            num_train_epochs=3,
-            max_steps=10,
-            save_steps=1000,
-            save_total_limit=10,
-            gradient_checkpointing=True,
-            lr_scheduler_type="constant",
+            learning_rate=cfg.finetune.learning_rate,
+            per_device_train_batch_size=cfg.finetune.per_device_train_batch_size,
+            gradient_accumulation_steps=cfg.finetune.gradient_accumulation_steps,
+            logging_steps=cfg.finetune.logging_steps,
+            num_train_epochs=cfg.num_epochs,
+            max_steps=cfg.finetune.max_steps,
+            save_steps=cfg.finetune.save_steps,
+            save_total_limit=cfg.finetune.save_total_limit,
+            gradient_checkpointing=cfg.finetune.gradient_checkpointing,
+            lr_scheduler_type=cfg.finetune.lr_scheduler_type,
             save_strategy="epoch",
             logging_dir="./logs",
             
@@ -39,7 +38,7 @@ def finetune_llm():
             train_dataset=train_dataset,
             args=training_args,
             tokenizer=tokenizer,
-            max_seq_length=512,
+            max_seq_length=cfg.model.output_size,
             formatting_func=formatting_prompts_func,
             data_collator=data_collator
         )

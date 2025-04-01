@@ -304,7 +304,7 @@ class FLClient(fl.client.NumPyClient):
             num_examples_test = len(self.test_loader)
 
         elif self.model_type == "Huggingface":
-            # 추후 실행
+            # 평가는 추후 실행
             test_loss = 0.0
             test_accuracy = 0.0
             num_examples_test = 1
