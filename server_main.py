@@ -16,15 +16,8 @@ def main(cfg: DictConfig) -> None:
     Set the initial global model you created in models.py.
     """
     # Build init global model using transformers
-    base_model = AutoModelForCausalLM.from_pretrained("./dummy-basemodel")
-    peft_config = LoraConfig(
-        r=8,
-        lora_alpha=16,
-        lora_dropout=0.075,
-        task_type="CAUSAL_LM",
-    )
 
-    model = get_peft_model(base_model, peft_config)
+    model = None
     model_type = cfg.model_type # Check tensorflow or torch model
     model_name = cfg.model.name
     

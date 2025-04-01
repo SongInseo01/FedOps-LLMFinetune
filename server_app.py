@@ -187,10 +187,8 @@ class FLServer():
                 logging.warning("Skipping evaluation for Huggingface model")
                 loss, accuracy = 0.0, 0.0
 
-                set_parameters_for_llm(model, parameters_ndarrays)
-
-                model_save_path = f"{gl_model_path}"
-                model.save_pretrained(model_save_path)
+                os.makedirs(gl_model_path, exist_ok=True)
+                np.savez(os.path.join(gl_model_path, "adapter_parameters.npz"), *parameters_ndarrays)
 
 
                 
@@ -297,9 +295,9 @@ class FLServer():
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}.pth"
                 server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type == "Huggingface":
+                # 이미 위에서 save된 adapter_parameters.npz 파일을 zip 처리
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}"
-                model_save_path = f"./{global_model_file_name}"
-                self.init_model.save_pretrained(model_save_path)
+                model_save_path = f"./{gl_model_name}_gl_model_V{self.server.gl_model_v}"
 
                 zip_path = f"{model_save_path}.zip"
                 server_utils.zip_folder(model_save_path, zip_path)
