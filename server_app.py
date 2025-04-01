@@ -12,7 +12,7 @@ from collections import OrderedDict
 from hydra.utils import instantiate
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import get_peft_model, LoraConfig
-from models_llm import get_parameters_for_llm, set_parameters_for_llm
+from models_llm import get_parameters_for_llm, set_parameters_for_llm, set_parameters_for_llm_server
 
 # TF warning log filtering
 # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -186,7 +186,7 @@ class FLServer():
             elif self.model_type == "Huggingface":
                 logging.warning("Skipping evaluation for Huggingface model")
                 loss, accuracy = 0.0, 0.0
-                set_parameters_for_llm(model, parameters_ndarrays)
+                set_parameters_for_llm_server(model, parameters_ndarrays)
 
                 model_save_path = f"{gl_model_path}"
                 model.save_pretrained(model_save_path)

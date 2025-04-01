@@ -37,7 +37,6 @@ from dataset_llm import (
 )
 from models_llm import (
     cosine_annealing_for_llm,
-    get_model_for_llm,
     set_parameters_for_llm,
     get_parameters_for_llm,
 )
@@ -213,19 +212,24 @@ class FLClient(fl.client.NumPyClient):
             train_results_prefixed = {}
             val_results_prefixed = {}
 
-            logging.info('Hf fit start 1')
+            logging.info('Hf-fit set param')
             # Update local model parameters: LoRA Adapter params
             self.set_parameters(parameters)
 
-            logging.info('Hf fit start 2')
+            logging.info('Hf-fit finetune')
             trained_model = self.finetune_llm(self.model, self.trainset, self.val_loader.dataset if self.val_loader else None, self.tokenizer, self.formatting_prompts_func, self.data_collator)
-            logging.info('Hf fit start 3')
+            logging.info('Hf-fit get param')
             parameters_prime = self.get_parameters()
-            logging.info('Hf fit start 4')
+            logging.info('Hf-fit save model')
             num_examples_train = len(self.trainset)
 
             train_loss = results["train_loss"] if "train_loss" in results else None
             results = {"train_loss": train_loss}
+
+            model_save_path = model_path
+            self.model.save_pretrained(model_save_path)
+            # 선택적으로 tokenizer도 함께 저장
+            self.tokenizer.save_pretrained(model_save_path)
 
 
 
