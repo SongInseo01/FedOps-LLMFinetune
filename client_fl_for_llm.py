@@ -29,6 +29,7 @@ from flwr.common.config import unflatten_dict
 from omegaconf import DictConfig
 from transformers import TrainingArguments
 from trl import SFTTrainer
+from sklearn.metrics import accuracy_score
 
 from dataset_llm import (
     get_tokenizer_and_data_collator_and_propt_formatting,
@@ -56,7 +57,7 @@ class FLClient(fl.client.NumPyClient):
                  # PyTorch params
                  train_loader=None, val_loader=None, test_loader=None, cfg=None, train_torch=None, test_torch=None,
                  # HuggingFace params
-                 finetune_llm=None, trainset=None, tokenizer=None, data_collator=None, formatting_prompts_func=None, training_args: DictConfig = None, num_rounds=None):
+                 finetune_llm=None, trainset=None, val_dataset=None, test_dataset=None, tokenizer=None, data_collator=None, formatting_prompts_func=None, training_args: DictConfig = None, num_rounds=None):
         
         self.cfg = cfg
         self.model_type = model_type
@@ -86,7 +87,8 @@ class FLClient(fl.client.NumPyClient):
 
         elif self.model_type == "Huggingface":
             self.trainset = trainset
-            self.val_loader = val_loader
+            self.val_dataset = val_dataset
+            self.test_dataset = test_dataset
             self.tokenizer = tokenizer
             self.finetune_llm = finetune_llm
             self.data_collator = data_collator
@@ -303,10 +305,43 @@ class FLClient(fl.client.NumPyClient):
             num_examples_test = len(self.test_loader)
 
         elif self.model_type == "Huggingface":
-            # 추후 구현
-            test_loss = 0.0
-            test_accuracy = 0.0
-            num_examples_test = 1
+            def compute_metrics(eval_pred):
+                logits, labels = eval_pred
+                predictions = np.argmax(logits, axis=-1)
+                acc = accuracy_score(labels.flatten(), predictions.flatten())
+                return {"accuracy": acc}
+
+            self.set_parameters(parameters)
+            # 디바이스 맞춰서 모델 이동
+            self.model.eval()
+            self.model.to("cuda" if torch.cuda.is_available() else "cpu")
+
+            # 기본 평가용 args
+            eval_args = TrainingArguments(
+                output_dir="./tmp_eval",
+                per_device_eval_batch_size=4,
+                dataloader_drop_last=False,
+                report_to="none",
+                do_train=False,
+                do_eval=True,
+                disable_tqdm=True,
+            )
+
+            # Trainer로 평가 실행
+            trainer = SFTTrainer(
+                model=self.model,
+                args=eval_args,
+                tokenizer=self.tokenizer,
+                data_collator=self.data_collator,
+                compute_metrics=compute_metrics,
+            )
+
+            eval_result = trainer.evaluate(eval_dataset=self.test_dataset)
+
+            test_loss = eval_result.get("eval_loss", 0.0)
+            test_accuracy = eval_result.get("eval_accuracy", 0.0)  # 커스텀 metric 없으면 0.0으로 나올 수 있음
+            num_examples_test = len(self.test_dataset)
+
 
         else:
             raise ValueError("Unsupported model_type")
@@ -328,8 +363,15 @@ class FLClient(fl.client.NumPyClient):
         # else:
         #     test_result = {"fl_task_id": self.fl_task_id, "client_mac": self.client_mac, "client_name": self.client_name, "round": self.fl_round,
         #                 "test_loss": test_loss, "test_accuracy": test_accuracy, "gl_model_v": self.gl_model}
-        test_result = {"fl_task_id": self.fl_task_id, "client_mac": self.client_mac, "client_name": self.client_name, "round": self.fl_round,
-                         "test_loss": test_loss, "test_accuracy": test_accuracy, "gl_model_v": self.gl_model, 'wandb_name': self.wandb_name}
+        test_result = {"fl_task_id": self.fl_task_id, 
+                        "client_mac": self.client_mac, 
+                        "client_name": self.client_name, 
+                        "round": self.fl_round,
+                        "test_loss": test_loss,
+                        "test_accuracy": test_accuracy,
+                        "gl_model_v": self.gl_model,
+                        'wandb_name': self.wandb_name
+                        }
         json_result = json.dumps(test_result)
         logger.info(f'test - {json_result}')
 

@@ -130,8 +130,8 @@ def main(cfg: DictConfig) -> None:
     registration = {
         "finetune_llm": finetune_llm,
         "trainset" : train_dataset,
-        "val_loader" : val_dataset,
-        "test_loader" : test_dataset,
+        "val_dataset" : val_dataset,
+        "test_dataset" : test_dataset,
         "model" : model,
         "model_name": cfg.model.name,
         "tokenizer" : tokenizer,

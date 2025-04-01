@@ -57,6 +57,8 @@ class FLClientTask():
         
         elif self.model_type == "Huggingface":
             self.trainset = fl_task["trainset"]
+            self.val_dataset = fl_task["val_dataset"]
+            self.test_dataset = fl_task["test_dataset"]
             self.tokenizer = fl_task["tokenizer"]
             self.finetune_llm = fl_task["finetune_llm"]
             self.data_collator = fl_task["data_collator"]
@@ -127,6 +129,8 @@ class FLClientTask():
                     model_name=self.model_name,
                     model_type=self.model_type,
                     trainset=self.trainset,
+                    val_dataset=self.val_dataset,
+                    test_dataset=self.test_dataset,
                     tokenizer=self.tokenizer,
                     finetune_llm=self.finetune_llm,
                     formatting_prompts_func=self.formatting_prompts_func,
