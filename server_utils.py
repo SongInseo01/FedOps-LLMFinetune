@@ -87,9 +87,7 @@ def model_download_s3(task_id, model_type, model=None):
             model.load_state_dict(torch.load(gl_model_save_path))
         
         elif model_type == "Huggingface":
-            from peft import PeftModel
-            logging.info(f"loaded Adapter parameters")
-            model = PeftModel.from_pretrained(model, latest_gl_model_file)
+            pass
 
         # gl_model = tf.keras.models.load_model(gl_model_save_path)            
 
@@ -133,9 +131,7 @@ def model_download_local(model_type, model=None):
                 model.load_state_dict(torch.load(latest_gl_model_file))
 
             elif model_type =="Huggingface":
-                from peft import PeftModel
-                logging.info(f"loaded Adapter parameters")
-                model = PeftModel.from_pretrained(model, latest_gl_model_file)
+                pass
                 
             else:
                 print("No matching model files found.")
