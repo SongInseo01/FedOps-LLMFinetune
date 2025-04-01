@@ -42,6 +42,7 @@ def set_parameters_for_llm_server(model: PeftModel, parameters: NDArrays) -> Non
     """
     전달된 LoRA adapter 파라미터(ndarray 리스트)를 모델의 LoRA 레이어에만 설정함.
     """
+    
     if not isinstance(model, PeftModel):
         raise ValueError("LoRA adapter를 설정하려면 모델은 PeftModel이어야 합니다.")
     
