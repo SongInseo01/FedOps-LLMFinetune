@@ -13,6 +13,7 @@ from hydra.utils import instantiate
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import get_peft_model, LoraConfig, PeftModel
 from models_llm import get_parameters_for_llm, set_parameters_for_llm, set_parameters_for_llm_server
+import shutil
 
 # TF warning log filtering
 # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -296,13 +297,14 @@ class FLServer():
                 server_utils.upload_model_to_bucket(self.task_id, global_model_file_name)
             elif self.model_type == "Huggingface":
                 global_model_file_name = f"{gl_model_name}_gl_model_V{self.server.gl_model_v}"
-                # 모델 디렉토리 경로
-                model_save_path = f"./{gl_model_name}_gl_model_V{self.server.gl_model_v}"
-                
-                # npz 파일 경로 지정
-                npz_file_path = f"{model_save_path}_adapter_model_parameters.npz"
+                npz_file_path = f"./{global_model_file_name}.npz"
+                # 경로 변경: evaluate에서 저장한 실제 경로
+                # evaluate에서는: ./{gl_model_name}_gl_model_VN/adapter_parameters.npz 로 저장함
+                model_dir = f"./{global_model_file_name}"
+                real_npz_path = os.path.join(model_dir, "adapter_parameters.npz")
+                # 파일 이름 통일을 위해 복사 (선택)
+                shutil.copy(real_npz_path, npz_file_path)
 
-                # S3 업로드
                 server_utils.upload_model_to_bucket(self.task_id, npz_file_path)
             
             
